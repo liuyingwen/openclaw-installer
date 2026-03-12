@@ -28,6 +28,15 @@ go run ./cmd/openclaw-installer install --yes
 ./scripts/build-release.sh
 ```
 
+## GitHub Releases
+
+GitHub Releases are now published by `.github/workflows/release.yml`.
+
+- Push a version tag such as `v1.2.3` to publish a release automatically.
+- Or run the `Release Installer` workflow manually with `workflow_dispatch` and provide the target tag.
+- The workflow runs `go test ./...`, executes `./scripts/build-release.sh`, and uploads all binaries in `dist/` plus `openclaw-installer-checksums.txt` to the matching GitHub Release.
+- If the release already exists, the workflow replaces the assets in place with `gh release upload --clobber`.
+
 When running inside a restricted environment, set a writable Go cache first:
 
 ```bash
