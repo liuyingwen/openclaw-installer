@@ -50,6 +50,13 @@ jobs:
           echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
 
       - name: Run tests
+        run: bash scripts/test-install-latest.sh
+
+      - name: Test Windows bootstrap script
+        shell: pwsh
+        run: ./scripts/test-install-latest.ps1
+
+      - name: Run Go tests
         run: go test ./...
 
       - name: Build release binaries

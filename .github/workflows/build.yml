@@ -39,6 +39,13 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Test bootstrap script
+        run: bash scripts/test-install-latest.sh
+
+      - name: Test Windows bootstrap script
+        shell: pwsh
+        run: ./scripts/test-install-latest.ps1
+
       - name: Run tests
         run: go test ./...
 
