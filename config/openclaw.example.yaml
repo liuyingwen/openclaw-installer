@@ -5,17 +5,17 @@ app:
 install:
   - name: install openclaw cli
     run_by_os:
-      darwin: curl -fsSL https://openclaw.ai/install-cli.sh | bash -s -- --no-onboard
-      linux: curl -fsSL https://openclaw.ai/install-cli.sh | bash -s -- --no-onboard
+      darwin: curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
+      linux: curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
       windows: powershell -ExecutionPolicy Bypass -Command "& ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard"
   - name: install default gateway
     run_by_os:
-      darwin: ~/.openclaw/bin/openclaw gateway install
-      linux: ~/.openclaw/bin/openclaw gateway install
-      windows: "%USERPROFILE%\\.openclaw\\bin\\openclaw.exe" gateway install
+      darwin: if command -v openclaw >/dev/null 2>&1; then openclaw gateway install; elif [ -x /opt/homebrew/bin/openclaw ]; then /opt/homebrew/bin/openclaw gateway install; elif [ -x /usr/local/bin/openclaw ]; then /usr/local/bin/openclaw gateway install; elif [ -x "$HOME/.local/bin/openclaw" ]; then "$HOME/.local/bin/openclaw" gateway install; elif [ -x "$HOME/.npm-global/bin/openclaw" ]; then "$HOME/.npm-global/bin/openclaw" gateway install; elif command -v npm >/dev/null 2>&1 && [ -x "$(npm prefix -g 2>/dev/null)/bin/openclaw" ]; then "$(npm prefix -g 2>/dev/null)/bin/openclaw" gateway install; else openclaw gateway install; fi
+      linux: if command -v openclaw >/dev/null 2>&1; then openclaw gateway install; elif [ -x /opt/homebrew/bin/openclaw ]; then /opt/homebrew/bin/openclaw gateway install; elif [ -x /usr/local/bin/openclaw ]; then /usr/local/bin/openclaw gateway install; elif [ -x "$HOME/.local/bin/openclaw" ]; then "$HOME/.local/bin/openclaw" gateway install; elif [ -x "$HOME/.npm-global/bin/openclaw" ]; then "$HOME/.npm-global/bin/openclaw" gateway install; elif command -v npm >/dev/null 2>&1 && [ -x "$(npm prefix -g 2>/dev/null)/bin/openclaw" ]; then "$(npm prefix -g 2>/dev/null)/bin/openclaw" gateway install; else openclaw gateway install; fi
+      windows: powershell -ExecutionPolicy Bypass -Command "$cmd = Get-Command openclaw -ErrorAction SilentlyContinue; $appDataOpenClaw = Join-Path $env:APPDATA 'npm\\openclaw.cmd'; $localOpenClaw = Join-Path $env:USERPROFILE '.local\\bin\\openclaw.cmd'; if ($cmd -and $cmd.Definition) { & $cmd.Definition gateway install } elseif (Test-Path $appDataOpenClaw) { & $appDataOpenClaw gateway install } elseif (Test-Path $localOpenClaw) { & $localOpenClaw gateway install } else { openclaw gateway install }"
 verify:
   - name: check binary
     run_by_os:
-      darwin: ~/.openclaw/bin/openclaw --version
-      linux: ~/.openclaw/bin/openclaw --version
-      windows: "%USERPROFILE%\\.openclaw\\bin\\openclaw.exe" --version
+      darwin: if command -v openclaw >/dev/null 2>&1; then openclaw --version; elif [ -x /opt/homebrew/bin/openclaw ]; then /opt/homebrew/bin/openclaw --version; elif [ -x /usr/local/bin/openclaw ]; then /usr/local/bin/openclaw --version; elif [ -x "$HOME/.local/bin/openclaw" ]; then "$HOME/.local/bin/openclaw" --version; elif [ -x "$HOME/.npm-global/bin/openclaw" ]; then "$HOME/.npm-global/bin/openclaw" --version; elif command -v npm >/dev/null 2>&1 && [ -x "$(npm prefix -g 2>/dev/null)/bin/openclaw" ]; then "$(npm prefix -g 2>/dev/null)/bin/openclaw" --version; else openclaw --version; fi
+      linux: if command -v openclaw >/dev/null 2>&1; then openclaw --version; elif [ -x /opt/homebrew/bin/openclaw ]; then /opt/homebrew/bin/openclaw --version; elif [ -x /usr/local/bin/openclaw ]; then /usr/local/bin/openclaw --version; elif [ -x "$HOME/.local/bin/openclaw" ]; then "$HOME/.local/bin/openclaw" --version; elif [ -x "$HOME/.npm-global/bin/openclaw" ]; then "$HOME/.npm-global/bin/openclaw" --version; elif command -v npm >/dev/null 2>&1 && [ -x "$(npm prefix -g 2>/dev/null)/bin/openclaw" ]; then "$(npm prefix -g 2>/dev/null)/bin/openclaw" --version; else openclaw --version; fi
+      windows: powershell -ExecutionPolicy Bypass -Command "$cmd = Get-Command openclaw -ErrorAction SilentlyContinue; $appDataOpenClaw = Join-Path $env:APPDATA 'npm\\openclaw.cmd'; $localOpenClaw = Join-Path $env:USERPROFILE '.local\\bin\\openclaw.cmd'; if ($cmd -and $cmd.Definition) { & $cmd.Definition --version } elseif (Test-Path $appDataOpenClaw) { & $appDataOpenClaw --version } elseif (Test-Path $localOpenClaw) { & $localOpenClaw --version } else { openclaw --version }"

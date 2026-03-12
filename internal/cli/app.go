@@ -73,13 +73,13 @@ func (a App) runInstall(args []string, out io.Writer) error {
 	if dryRun {
 		printProfile(out, profile)
 		printPlan(out, "repair plan", repairPlan.Commands)
-			planned, err := plannedCommands(string(profile.OS), repairPlan.Commands, cfg)
-			if err != nil {
-				return err
-			}
-			printPlan(out, "planned commands", planned)
-			return nil
+		planned, err := plannedCommands(string(profile.OS), repairPlan.Commands, cfg)
+		if err != nil {
+			return err
 		}
+		printPlan(out, "planned commands", planned)
+		return nil
+	}
 
 	if !assumeYes {
 		return fmt.Errorf("install requires --yes or --dry-run")
@@ -93,6 +93,7 @@ func (a App) runInstall(args []string, out io.Writer) error {
 	if result.LogPath != "" {
 		fmt.Fprintf(out, "log file: %s\n", result.LogPath)
 	}
+	printPostInstallGuidance(out, profile.OS)
 	return nil
 }
 
@@ -213,6 +214,20 @@ func printPlan(out io.Writer, title string, commands []string) {
 	}
 	for _, command := range commands {
 		fmt.Fprintf(out, "- %s\n", command)
+	}
+}
+
+func printPostInstallGuidance(out io.Writer, osName platform.OS) {
+	fmt.Fprintln(out, "openclaw should now be available on your PATH")
+	fmt.Fprintln(out, "try: openclaw --version")
+
+	switch osName {
+	case platform.OSMac, platform.OSLinux:
+		fmt.Fprintln(out, "if your current shell still cannot find it, open a new terminal and run:")
+		fmt.Fprintln(out, "command -v openclaw")
+	case platform.OSWindows:
+		fmt.Fprintln(out, "if your current PowerShell still cannot find it, open a new terminal and run:")
+		fmt.Fprintln(out, "Get-Command openclaw")
 	}
 }
 

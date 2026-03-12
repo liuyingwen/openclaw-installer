@@ -69,9 +69,9 @@ env GOCACHE=/tmp/openclaw-gocache GOMODCACHE=/tmp/openclaw-gomodcache go test ./
 - `install`：按顺序执行的安装命令，用来拉取并运行 OpenClaw 安装器
 - `verify`：安装完成后必须成功执行的校验命令
 
-示例配置当前指向的是 OpenClaw 官方安装脚本：
+示例配置当前指向的是 OpenClaw 官方推荐安装脚本：
 
-- macOS/Linux: `https://openclaw.ai/install-cli.sh --no-onboard`
+- macOS/Linux: `https://openclaw.ai/install.sh --no-onboard`
 - Windows: `https://openclaw.ai/install.ps1 -NoOnboard`
 
 ## 从源码构建
@@ -98,10 +98,11 @@ GitHub Release 由 `.github/workflows/release.yml` 自动发布。
 
 ## 说明
 
-- 当前示例配置会调用 OpenClaw 官方安装脚本，并安装默认 gateway。
+- 当前示例配置会调用 OpenClaw 官方推荐安装脚本，并安装默认 gateway。
 - 如果系统里没有受支持的包管理器，安装器可以在 macOS 上引导安装 Homebrew，在 Windows 上引导安装 Scoop，然后再补齐依赖。
 - Linux 上的包管理器引导策略目前比较保守，当前版本默认目标系统已经具备 `apt`、`dnf`、`yum` 或 `pacman` 其中之一。
-- `install-cli.sh --no-onboard` 会跳过交互式 onboarding，更适合一键安装场景；如果用户需要，后续可以再单独执行 onboarding。
+- `install.sh --no-onboard` 会跳过交互式 onboarding，更适合一键安装场景；如果用户需要，后续可以再单独执行 onboarding。
+- 官方推荐安装脚本会走全局安装路径；实际可执行文件通常会出现在 `/usr/local/bin`、`/opt/homebrew/bin`、`%APPDATA%\\npm` 或其他全局 npm bin 目录里，具体位置取决于当前系统和 Node/npm 前缀。
 - `install` 现在要求显式传入 `--yes`，除非你使用的是 `--dry-run`，这样可以减少误执行。
 - 如果某个步骤没有为当前操作系统定义命令，安装器会直接失败，而不是静默跳过。
 - 安装成功后，程序会把实际执行的命令计划写入日志文件，并在最后输出日志路径。

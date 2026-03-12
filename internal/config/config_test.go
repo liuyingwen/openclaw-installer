@@ -1,6 +1,9 @@
 package config
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestLoadParsesInstallerManifest(t *testing.T) {
 	cfg, err := Load("../../config/openclaw.example.yaml")
@@ -37,6 +40,23 @@ func TestLoadRejectsInvalidManifest(t *testing.T) {
 	_, err := Load("../../config/does-not-exist.yaml")
 	if err == nil {
 		t.Fatal("expected load to fail for missing file")
+	}
+}
+
+func TestDefaultUsesRecommendedInstallScriptAndGlobalOpenClawCommands(t *testing.T) {
+	cfg := Default()
+
+	if !strings.Contains(cfg.Install[0].CommandFor("darwin"), "https://openclaw.ai/install.sh") {
+		t.Fatalf("expected darwin install to use install.sh, got %q", cfg.Install[0].CommandFor("darwin"))
+	}
+	if !strings.Contains(cfg.Install[1].CommandFor("darwin"), "openclaw gateway install") {
+		t.Fatalf("expected darwin gateway install to use global openclaw command, got %q", cfg.Install[1].CommandFor("darwin"))
+	}
+	if !strings.Contains(cfg.Verify[0].CommandFor("darwin"), "openclaw --version") {
+		t.Fatalf("expected darwin verify to use global openclaw command, got %q", cfg.Verify[0].CommandFor("darwin"))
+	}
+	if !strings.Contains(cfg.Install[1].CommandFor("windows"), "$cmd.Definition") {
+		t.Fatalf("expected windows gateway install to invoke resolved command definition, got %q", cfg.Install[1].CommandFor("windows"))
 	}
 }
 

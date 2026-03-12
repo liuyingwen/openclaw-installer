@@ -72,8 +72,11 @@ func TestInstallDryRunPrintsPlanWithoutExecutingWorkflow(t *testing.T) {
 	}
 
 	text := output.String()
-	if !strings.Contains(text, "curl -fsSL https://openclaw.ai/install-cli.sh | bash -s -- --no-onboard") {
+	if !strings.Contains(text, "https://openclaw.ai/install.sh") {
 		t.Fatalf("expected install step in output, got %q", text)
+	}
+	if !strings.Contains(text, "openclaw gateway install") {
+		t.Fatalf("expected gateway install to use global openclaw command, got %q", text)
 	}
 }
 
@@ -147,8 +150,11 @@ func TestPrintPlanUsesEmbeddedDefaultConfigWhenConfigFlagMissing(t *testing.T) {
 	}
 
 	text := output.String()
-	if !strings.Contains(text, "curl -fsSL https://openclaw.ai/install-cli.sh | bash -s -- --no-onboard") {
+	if !strings.Contains(text, "https://openclaw.ai/install.sh") {
 		t.Fatalf("expected embedded install command, got %q", text)
+	}
+	if !strings.Contains(text, "openclaw --version") {
+		t.Fatalf("expected embedded verify command to use global openclaw command, got %q", text)
 	}
 }
 
@@ -198,6 +204,12 @@ func TestInstallNonInteractiveRunsAndReportsLogPath(t *testing.T) {
 	text := output.String()
 	if !strings.Contains(text, "log file: /tmp/openclaw-installer.log") {
 		t.Fatalf("expected log path in output, got %q", text)
+	}
+	if !strings.Contains(text, "openclaw should now be available on your PATH") {
+		t.Fatalf("expected global command guidance in output, got %q", text)
+	}
+	if !strings.Contains(text, "try: openclaw --version") {
+		t.Fatalf("expected verification guidance in output, got %q", text)
 	}
 }
 

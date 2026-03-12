@@ -2,6 +2,13 @@
 set -euo pipefail
 
 OPENCLAW_INSTALLER_REPO="${OPENCLAW_INSTALLER_REPO:-liuyingwen/openclaw-installer}"
+OPENCLAW_INSTALLER_TEMP_DIR=""
+
+cleanup_temp_dir() {
+  if [[ -n "${OPENCLAW_INSTALLER_TEMP_DIR:-}" ]]; then
+    rm -rf -- "${OPENCLAW_INSTALLER_TEMP_DIR}"
+  fi
+}
 
 resolve_asset_name() {
   local kernel="$1"
@@ -68,15 +75,14 @@ download_file() {
 main() {
   local asset_name
   local url
-  local temp_dir
   local binary_path
 
   asset_name="$(resolve_asset_name "$(uname -s)" "$(uname -m)")"
   url="$(latest_release_url "${asset_name}")"
-  temp_dir="$(mktemp -d)"
-  binary_path="${temp_dir}/openclaw-installer"
+  OPENCLAW_INSTALLER_TEMP_DIR="$(mktemp -d)"
+  binary_path="${OPENCLAW_INSTALLER_TEMP_DIR}/openclaw-installer"
 
-  trap 'rm -rf "${temp_dir}"' EXIT
+  trap cleanup_temp_dir EXIT
 
   echo "Downloading ${asset_name}..." >&2
   download_file "${url}" "${binary_path}"
