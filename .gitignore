@@ -1,0 +1,15 @@
+# Build outputs
+dist/
+bin/
+
+# Go caches
+*.test
+coverage.out
+
+# Local environment
+.DS_Store
+.omx/
+
+# IDE files
+.idea/
+.vscode/

@@ -1,0 +1,58 @@
+name: Build Installer
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: darwin
+            goarch: arm64
+            artifact_name: openclaw-installer-darwin-arm64
+          - goos: darwin
+            goarch: amd64
+            artifact_name: openclaw-installer-darwin-amd64
+          - goos: linux
+            goarch: amd64
+            artifact_name: openclaw-installer-linux-amd64
+          - goos: windows
+            goarch: amd64
+            artifact_name: openclaw-installer-windows-amd64.exe
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run tests
+        run: go test ./...
+
+      - name: Build binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          mkdir -p dist
+          go build -o "dist/${{ matrix.artifact_name }}" ./cmd/openclaw-installer
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dist/${{ matrix.artifact_name }}
+          if-no-files-found: error

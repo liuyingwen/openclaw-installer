@@ -1,0 +1,21 @@
+app:
+  name: openclaw
+  version: latest
+  install_dir: ~/.openclaw
+install:
+  - name: install openclaw cli
+    run_by_os:
+      darwin: curl -fsSL https://openclaw.ai/install-cli.sh | bash -s -- --no-onboard
+      linux: curl -fsSL https://openclaw.ai/install-cli.sh | bash -s -- --no-onboard
+      windows: powershell -ExecutionPolicy Bypass -Command "& ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard"
+  - name: install default gateway
+    run_by_os:
+      darwin: ~/.openclaw/bin/openclaw gateway install
+      linux: ~/.openclaw/bin/openclaw gateway install
+      windows: "%USERPROFILE%\\.openclaw\\bin\\openclaw.exe" gateway install
+verify:
+  - name: check binary
+    run_by_os:
+      darwin: ~/.openclaw/bin/openclaw --version
+      linux: ~/.openclaw/bin/openclaw --version
+      windows: "%USERPROFILE%\\.openclaw\\bin\\openclaw.exe" --version

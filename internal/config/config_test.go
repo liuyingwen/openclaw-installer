@@ -1,0 +1,55 @@
+package config
+
+import "testing"
+
+func TestLoadParsesInstallerManifest(t *testing.T) {
+	cfg, err := Load("../../config/openclaw.example.yaml")
+	if err != nil {
+		t.Fatalf("expected config to load, got error: %v", err)
+	}
+
+	if cfg.App.Name != "openclaw" {
+		t.Fatalf("expected app name %q, got %q", "openclaw", cfg.App.Name)
+	}
+
+	if len(cfg.Prerequisites) != 0 {
+		t.Fatalf("expected 0 prerequisites, got %d", len(cfg.Prerequisites))
+	}
+
+	if len(cfg.Install) != 2 {
+		t.Fatalf("expected 2 install steps, got %d", len(cfg.Install))
+	}
+
+	if len(cfg.Verify) != 1 {
+		t.Fatalf("expected 1 verify step, got %d", len(cfg.Verify))
+	}
+
+	if cfg.Install[0].CommandFor("darwin") == "" {
+		t.Fatal("expected darwin install command")
+	}
+
+	if cfg.Install[0].CommandFor("windows") == "" {
+		t.Fatal("expected windows install command")
+	}
+}
+
+func TestLoadRejectsInvalidManifest(t *testing.T) {
+	_, err := Load("../../config/does-not-exist.yaml")
+	if err == nil {
+		t.Fatal("expected load to fail for missing file")
+	}
+}
+
+func TestResolveCommandFailsForUnsupportedOS(t *testing.T) {
+	step := CommandStep{
+		Name: "install openclaw",
+		RunByOS: map[string]string{
+			"darwin": "run-on-mac",
+		},
+	}
+
+	_, err := step.ResolveCommand("windows")
+	if err == nil {
+		t.Fatal("expected unsupported os error")
+	}
+}
